@@ -1,5 +1,5 @@
 import React from "react";
-import { mockGames } from "./data/games";
+import { searchGames, convertApiToGame } from "./services/gameApi";
 import { type Game } from "./data/games";
 
 interface GameCardProps {
@@ -20,6 +20,7 @@ const GameCard = ({ name }: GameCardProps) => {
   const [savedCharacter, setSavedCharacter] = React.useState("");
   const [gameName, setGameName] = React.useState("");
   const [savedGame, setSavedGame] = React.useState<Game | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleCharacterName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCharacterName(event.target.value);
@@ -29,34 +30,44 @@ const GameCard = ({ name }: GameCardProps) => {
     setGameName(event.target.value);
   };
 
-  const handleSaveGame = () => {
-    // Сохраняем игру независимо
+  const findGame = async (searchName: string): Promise<Game | null> => {
+    try {
+      const results = await searchGames(searchName);
+      if (results.length > 0) {
+        return convertApiToGame(results[0]);
+      }
+      return null;
+    } catch (error) {
+      console.error("Error finding game:", error);
+      return null;
+    }
+  };
+
+  const handleSaveGame = async () => {
+    // Поиск игры
     if (gameName.trim()) {
-      const foundGame = findGame(gameName);
-      if (foundGame) {
+      setIsLoading(true);
+      try {
+        const foundGame = await findGame(gameName);
         setSavedGame(foundGame);
-      } else {
-        setSavedGame(null); // игра не найдена, но это ОК
+      } catch (error) {
+        console.error("Search failed:", error);
+        setSavedGame(null);
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    // Сохраняем персонажа независимо (только для карточек персонажей)
+    // Сохранение персонажа (независимо)
     if (isCharacterCard && characterName.trim()) {
       setSavedCharacter(characterName.trim());
     }
 
-    // Очищаем инпуты
+    // Очистка инпутов
     setGameName("");
     if (isCharacterCard) {
       setCharacterName("");
     }
-  };
-
-  const findGame = (searchName: string): Game | null => {
-    const found = mockGames.find(
-      (game) => game.name.toLowerCase() === searchName.toLowerCase(),
-    );
-    return found || null;
   };
 
   return (
@@ -64,9 +75,10 @@ const GameCard = ({ name }: GameCardProps) => {
       <input
         onChange={handleGameName}
         value={gameName}
-        className="w-32 pl-1"
+        className="w-32 pl-1 mb-1"
         placeholder="Name game"
-      ></input>
+        disabled={isLoading}
+      />
       {isCharacterCard && (
         <input
           onChange={handleCharacterName}
@@ -78,10 +90,11 @@ const GameCard = ({ name }: GameCardProps) => {
 
       <div className="flex justify-center-safe gap-2 m-1">
         <button
-          className="border-1 p-0.5 cursor-pointer"
+          className="border-1 p-0.5 cursor-pointer disabled:opacity-50"
           onClick={handleSaveGame}
+          disabled={isLoading}
         >
-          Select
+          {isLoading ? "Searching..." : "Select"}
         </button>
         <button
           onClick={() => {
@@ -89,27 +102,36 @@ const GameCard = ({ name }: GameCardProps) => {
             setSavedCharacter("");
           }}
           className="border-1 p-1 cursor-pointer"
+          disabled={isLoading}
         >
           Clear
         </button>
       </div>
-      <div className="h-52 bg-gray-500 text-center text-amber-50">
-        {savedGame ? (
+
+      <div className="h-52 bg-gray-500 text-center text-amber-50 flex items-center justify-center">
+        {isLoading ? (
+          <p>Searching game...</p>
+        ) : savedGame ? (
           <div>
             <img
               src={savedGame.imageUrl}
               alt={savedGame.name}
-              className="w-32 h-40 m-auto pt-2"
+              className="w-32 h-40 mx-auto mb-2 object-cover"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://via.placeholder.com/300x200?text=No+Image";
+              }}
             />
             <p className="text-sm">
-              {isCharacterCard ? savedCharacter : savedGame.name}
+              {isCharacterCard
+                ? savedCharacter || savedGame.name
+                : savedGame.name}
             </p>
           </div>
         ) : isCharacterCard && savedCharacter ? (
-          // Показать персонажа даже если игры нет
           <div>
-            <div className="w-32 h-40 m-auto pt-2 bg-gray-600 flex items-center justify-center">
-              <span>No game image</span>
+            <div className="w-32 h-40 mx-auto mb-2 bg-gray-600 flex items-center justify-center">
+              <span className="text-xs">No game image</span>
             </div>
             <p className="text-sm">{savedCharacter}</p>
           </div>
@@ -119,7 +141,7 @@ const GameCard = ({ name }: GameCardProps) => {
       </div>
 
       <div>
-        <h2 className="text-center">{name}</h2>
+        <h2 className="text-center font-semibold">{name}</h2>
       </div>
     </div>
   );
