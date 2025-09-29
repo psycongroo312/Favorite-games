@@ -7,21 +7,49 @@ interface GameCardProps {
 }
 
 const GameCard = ({ name }: GameCardProps) => {
+  const characterCards = [
+    "Favourite Protagonist",
+    "Favourite Male",
+    "Best Girl",
+    "Most Hated Character",
+    "Best Boss",
+  ];
+  const isCharacterCard = characterCards.includes(name);
+
+  const [characterName, setCharacterName] = React.useState("");
+  const [savedCharacter, setSavedCharacter] = React.useState("");
   const [gameName, setGameName] = React.useState("");
   const [savedGame, setSavedGame] = React.useState<Game | null>(null);
+
+  const handleCharacterName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCharacterName(event.target.value);
+  };
 
   const handleGameName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGameName(event.target.value);
   };
 
   const handleSaveGame = () => {
-    const foundGame = findGame(gameName);
-    if (foundGame) {
-      setSavedGame(foundGame);
-    } else {
-      setSavedGame(null);
+    // Сохраняем игру независимо
+    if (gameName.trim()) {
+      const foundGame = findGame(gameName);
+      if (foundGame) {
+        setSavedGame(foundGame);
+      } else {
+        setSavedGame(null); // игра не найдена, но это ОК
+      }
     }
+
+    // Сохраняем персонажа независимо (только для карточек персонажей)
+    if (isCharacterCard && characterName.trim()) {
+      setSavedCharacter(characterName.trim());
+    }
+
+    // Очищаем инпуты
     setGameName("");
+    if (isCharacterCard) {
+      setCharacterName("");
+    }
   };
 
   const findGame = (searchName: string): Game | null => {
@@ -39,6 +67,15 @@ const GameCard = ({ name }: GameCardProps) => {
         className="w-32 pl-1"
         placeholder="Name game"
       ></input>
+      {isCharacterCard && (
+        <input
+          onChange={handleCharacterName}
+          value={characterName}
+          className="w-32 pl-1"
+          placeholder="Character name"
+        />
+      )}
+
       <div className="flex justify-center-safe gap-2 m-1">
         <button
           className="border-1 p-0.5 cursor-pointer"
@@ -47,7 +84,10 @@ const GameCard = ({ name }: GameCardProps) => {
           Select
         </button>
         <button
-          onClick={() => setSavedGame(null)}
+          onClick={() => {
+            setSavedGame(null);
+            setSavedCharacter("");
+          }}
           className="border-1 p-1 cursor-pointer"
         >
           Clear
@@ -61,12 +101,23 @@ const GameCard = ({ name }: GameCardProps) => {
               alt={savedGame.name}
               className="w-32 h-40 m-auto pt-2"
             />
-            <p className="text-sm">{savedGame.name}</p>
+            <p className="text-sm">
+              {isCharacterCard ? savedCharacter : savedGame.name}
+            </p>
+          </div>
+        ) : isCharacterCard && savedCharacter ? (
+          // Показать персонажа даже если игры нет
+          <div>
+            <div className="w-32 h-40 m-auto pt-2 bg-gray-600 flex items-center justify-center">
+              <span>No game image</span>
+            </div>
+            <p className="text-sm">{savedCharacter}</p>
           </div>
         ) : (
           <p>No game selected</p>
         )}
       </div>
+
       <div>
         <h2 className="text-center">{name}</h2>
       </div>

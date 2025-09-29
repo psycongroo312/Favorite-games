@@ -40,11 +40,11 @@ export const cardNames = [
   "Best DLC",
   "Best Song",
   "Highest Playtime",
-  "Favourite Protagonist",
+  "Best Level (World Map/Stage/Area)",
   "Favourite Male",
   "Best Girl",
   "Most Hated Character",
   "Best Boss",
-  "Best Level (World Map/Stage/Area)",
+  "Favourite Protagonist",
   "Game you wanted to mention",
 ];
