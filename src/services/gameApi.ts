@@ -8,8 +8,9 @@ export interface ApiGame {
 
 export const searchGames = async (query: string): Promise<ApiGame[]> => {
   try {
+    const API_KEY = "8261cc68d0d547b4b4bba53b20288a6a";
     const response = await fetch(
-      `https://api.rawg.io/api/games?search=${encodeURIComponent(query)}`,
+      `https://api.rawg.io/api/games?key=${API_KEY}&search=${encodeURIComponent(query)}`,
     );
     const data = await response.json();
     return data.results || [];
