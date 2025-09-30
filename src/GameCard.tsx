@@ -44,7 +44,6 @@ const GameCard = ({ name }: GameCardProps) => {
   };
 
   const handleSaveGame = async () => {
-    // Поиск игры
     if (gameName.trim()) {
       setIsLoading(true);
       try {
@@ -58,12 +57,10 @@ const GameCard = ({ name }: GameCardProps) => {
       }
     }
 
-    // Сохранение персонажа (независимо)
     if (isCharacterCard && characterName.trim()) {
       setSavedCharacter(characterName.trim());
     }
 
-    // Очистка инпутов
     setGameName("");
     if (isCharacterCard) {
       setCharacterName("");
@@ -75,7 +72,7 @@ const GameCard = ({ name }: GameCardProps) => {
       <input
         onChange={handleGameName}
         value={gameName}
-        className="w-32 pl-1 mb-1"
+        className="w-44 pl-1 mb-1"
         placeholder="Name game"
         disabled={isLoading}
       />
@@ -83,7 +80,7 @@ const GameCard = ({ name }: GameCardProps) => {
         <input
           onChange={handleCharacterName}
           value={characterName}
-          className="w-32 pl-1"
+          className="w-44 pl-1"
           placeholder="Character name"
         />
       )}

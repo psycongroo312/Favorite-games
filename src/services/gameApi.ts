@@ -1,4 +1,3 @@
-// src/services/gameApi.ts
 import { type Game } from "../data/games";
 
 export interface ApiGame {
