@@ -13,6 +13,9 @@ const GameCard = ({ name }: GameCardProps) => {
     "Best Girl",
     "Most Hated Character",
     "Best Boss",
+    "Favorite OST",
+    "Best Song",
+    "Best Level (World Map/Stage/Area)",
   ];
   const isCharacterCard = characterCards.includes(name);
 
@@ -68,11 +71,11 @@ const GameCard = ({ name }: GameCardProps) => {
   };
 
   return (
-    <div className="w-44 h-80 mb-1.5 bg-gray-200">
+    <div className="w-44 h-[320] mb-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-lg hover:shadow-cyan-400/20 hover:border-cyan-400/50 transition-all duration-300">
       <input
         onChange={handleGameName}
         value={gameName}
-        className="w-44 pl-1 mb-1"
+        className="w-[174px] pl-2 mb-1 bg-slate-700 text-cyan-100 placeholder-slate-400 border border-slate-600 rounded focus:border-cyan-400 focus:outline-none"
         placeholder="Name game"
         disabled={isLoading}
       />
@@ -80,14 +83,14 @@ const GameCard = ({ name }: GameCardProps) => {
         <input
           onChange={handleCharacterName}
           value={characterName}
-          className="w-44 pl-1"
-          placeholder="Character name"
+          className="w-[174px] pl-2 bg-slate-700 text-purple-100 placeholder-slate-400 border border-slate-600 rounded focus:border-purple-400 focus:outline-none"
+          placeholder="Name character/song/level"
         />
       )}
 
-      <div className="flex justify-center gap-2 m-1">
+      <div className="flex justify-center gap-2 m-2">
         <button
-          className="border p-1 cursor-pointer"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1 px-3 rounded-md shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleSaveGame}
           disabled={isLoading}
         >
@@ -98,16 +101,16 @@ const GameCard = ({ name }: GameCardProps) => {
             setSavedGame(null);
             setSavedCharacter("");
           }}
-          className="border p-1 cursor-pointer"
+          className="bg-slate-600 hover:bg-slate-700 text-cyan-100 font-semibold py-1 px-3 rounded-md shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           Clear
         </button>
       </div>
 
-      <div className="h-52 bg-gray-500 text-center text-amber-50 flex items-center justify-center">
+      <div className="h-52 bg-gradient-to-br from-purple-900 to-blue-900 text-center text-cyan-100 flex items-center justify-center rounded-lg border border-slate-600 shadow-inner">
         {isLoading ? (
-          <p>Searching game...</p>
+          <p className="text-cyan-300 font-medium">Searching game...</p>
         ) : savedGame ? (
           <div>
             <img
@@ -119,7 +122,7 @@ const GameCard = ({ name }: GameCardProps) => {
                   "https://via.placeholder.com/300x200?text=No+Image";
               }}
             />
-            <p className="text-sm">
+            <p className="text-sm font-semibold text-cyan-200">
               {isCharacterCard
                 ? savedCharacter || savedGame.name
                 : savedGame.name}
@@ -127,18 +130,20 @@ const GameCard = ({ name }: GameCardProps) => {
           </div>
         ) : isCharacterCard && savedCharacter ? (
           <div>
-            <div className="w-32 h-40 mx-auto mb-2 bg-gray-600 flex items-center justify-center">
-              <span className="text-xs">No game image</span>
+            <div className="w-32 h-40 mx-auto mb-2 bg-slate-700 border border-slate-500 rounded flex items-center justify-center">
+              <span className="text-xs text-slate-400">No game image</span>
             </div>
-            <p className="text-sm">{savedCharacter}</p>
+            <p className="text-sm font-semibold text-purple-200">
+              {savedCharacter}
+            </p>
           </div>
         ) : (
-          <p>No game selected</p>
+          <p className="text-slate-400 font-medium">No game selected</p>
         )}
       </div>
 
-      <div>
-        <h2 className="text-center font-semibold">{name}</h2>
+      <div className="flex justify-center items-center h-12">
+        <h2 className="text-center text-cyan-100 font-bold text-sm">{name}</h2>
       </div>
     </div>
   );

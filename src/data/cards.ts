@@ -41,10 +41,10 @@ export const cardNames = [
   "Best Song",
   "Highest Playtime",
   "Best Level (World Map/Stage/Area)",
+  "Game you wanted to mention",
   "Favourite Male",
   "Best Girl",
   "Most Hated Character",
   "Best Boss",
   "Favourite Protagonist",
-  "Game you wanted to mention",
 ];
