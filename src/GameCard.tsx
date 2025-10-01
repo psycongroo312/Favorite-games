@@ -85,9 +85,9 @@ const GameCard = ({ name }: GameCardProps) => {
         />
       )}
 
-      <div className="flex justify-center-safe gap-2 m-1">
+      <div className="flex justify-center gap-2 m-1">
         <button
-          className="border-1 p-0.5 cursor-pointer disabled:opacity-50"
+          className="border p-1 cursor-pointer"
           onClick={handleSaveGame}
           disabled={isLoading}
         >
@@ -98,7 +98,7 @@ const GameCard = ({ name }: GameCardProps) => {
             setSavedGame(null);
             setSavedCharacter("");
           }}
-          className="border-1 p-1 cursor-pointer"
+          className="border p-1 cursor-pointer"
           disabled={isLoading}
         >
           Clear
