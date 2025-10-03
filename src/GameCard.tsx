@@ -90,7 +90,7 @@ const GameCard = ({ name }: GameCardProps) => {
       <input
         onChange={handleGameName}
         value={gameName}
-        className="w-full pl-2 mb-1 bg-slate-700 text-cyan-100 placeholder-slate-400 border border-slate-600 rounded focus:border-cyan-400 focus:outline-none text-sm"
+        className="w-full pl-2 mb-1 bg-slate-700 text-cyan-100 placeholder-slate-400 border border-slate-600 rounded focus:border-cyan-400 focus:outline-none text-base"
         placeholder="Name game"
         disabled={isLoading}
       />
@@ -98,7 +98,7 @@ const GameCard = ({ name }: GameCardProps) => {
         <input
           onChange={handleCharacterName}
           value={characterName}
-          className="w-full pl-2 bg-slate-700 text-purple-100 placeholder-slate-400 border border-slate-600 rounded focus:border-purple-400 focus:outline-none text-sm"
+          className="w-full pl-2 bg-slate-700 text-purple-100 placeholder-slate-400 border border-slate-600 rounded focus:border-purple-400 focus:outline-none text-base"
           placeholder="Character name"
         />
       )}

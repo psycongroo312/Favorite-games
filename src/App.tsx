@@ -1,7 +1,7 @@
 import GameCard from "./GameCard";
 import { cardNames } from "./data/cards";
 import "./index.css";
-import { clearAllData, hasSavedData } from "./utils/storage";
+import { clearAllData, hasSavedData, loadAllData } from "./utils/storage";
 
 export default function App() {
   const handleClearAll = () => {
@@ -13,6 +13,35 @@ export default function App() {
         clearAllData();
         window.location.reload();
       }
+    }
+  };
+
+  const handleShare = async () => {
+    const allData = loadAllData();
+    const shareText = Object.entries(allData)
+      .map(([name, { game, character }]) => {
+        if (game || character) {
+          const gameName = game?.name || "No game";
+          const charName = character || "No character";
+          return `${name}: ${gameName}${character ? `, Character: ${charName}` : ""}`;
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .join("\n");
+
+    if (!shareText) {
+      alert("No games or characters to share!");
+      return;
+    }
+
+    const finalText = `My Favorite Games:\n${shareText}`;
+    try {
+      await navigator.clipboard.writeText(finalText);
+      alert("Your favorites have been copied to clipboard!");
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
+      alert("Failed to copy to clipboard.");
     }
   };
 
@@ -32,7 +61,10 @@ export default function App() {
               >
                 Clear All
               </button>
-              <button className="bg-purple-900 hover:bg-red-700 text-white font-semibold py-1.5 px-3 text-sm rounded-lg shadow-md transition-colors duration-200">
+              <button
+                onClick={handleShare}
+                className="bg-purple-900 hover:bg-red-700 text-white font-semibold py-1.5 px-3 text-sm rounded-lg shadow-md transition-colors duration-200"
+              >
                 Share
               </button>
             </div>
