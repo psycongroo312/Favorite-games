@@ -99,7 +99,7 @@ const GameCard = ({ name }: GameCardProps) => {
           onChange={handleCharacterName}
           value={characterName}
           className="w-full pl-2 bg-slate-700 text-purple-100 placeholder-slate-400 border border-slate-600 rounded focus:border-purple-400 focus:outline-none text-base"
-          placeholder="Character name"
+          placeholder="Name character/song/ost"
         />
       )}
 
