@@ -42,9 +42,9 @@ export const cardNames = [
   "Highest Playtime",
   "Best Level (World Map/Stage/Area)",
   "Game you wanted to mention",
-  "Favourite Male",
+  "Favorite Male",
   "Best Girl",
   "Most Hated Character",
   "Best Boss",
-  "Favourite Protagonist",
+  "Favorite Protagonist",
 ];
