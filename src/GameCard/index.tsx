@@ -1,7 +1,7 @@
 import React from "react";
-import { searchGames, convertApiToGame } from "./services/gameApi";
-import { type Game } from "./data/games";
-import { saveCardData, loadCardData, clearCardData } from "./utils/storage";
+import { type Game } from "../data/games";
+import { saveCardData, loadCardData, clearCardData } from "../utils/storage";
+import FindGame from "./FindGame";
 
 interface GameCardProps {
   name: string;
@@ -16,7 +16,8 @@ const GameCard = ({ name }: GameCardProps) => {
     "Best Boss",
     "Favorite OST",
     "Best Song",
-    "Best Level (World Map/Stage/Area)",
+    "Favorite Protagonist",
+    "Favorite Male"
   ];
   const isCharacterCard = characterCards.includes(name);
 
@@ -40,18 +41,10 @@ const GameCard = ({ name }: GameCardProps) => {
     setGameName(event.target.value);
   };
 
-  const findGame = async (searchName: string): Promise<Game | null> => {
-    try {
-      const results = await searchGames(searchName);
-      if (results.length > 0) {
-        return convertApiToGame(results[0]);
-      }
-      return null;
-    } catch (error) {
-      console.error("Error finding game:", error);
-      return null;
-    }
-  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveGame();
+  }
 
   const handleSaveGame = async () => {
     let foundGame: Game | null = null;
@@ -59,7 +52,7 @@ const GameCard = ({ name }: GameCardProps) => {
     if (gameName.trim()) {
       setIsLoading(true);
       try {
-        foundGame = await findGame(gameName);
+        foundGame = await FindGame(gameName);
         setSavedGame(foundGame);
       } catch (error) {
         console.error("Search failed:", error);
@@ -87,6 +80,7 @@ const GameCard = ({ name }: GameCardProps) => {
 
   return (
     <div className="w-full max-w-44 h-[330px] mb-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-lg hover:shadow-cyan-400/20 hover:border-cyan-400/50 transition-all duration-300 mx-auto">
+      <form onSubmit={handleSubmit}>
       <input
         onChange={handleGameName}
         value={gameName}
@@ -123,7 +117,7 @@ const GameCard = ({ name }: GameCardProps) => {
           Clear
         </button>
       </div>
-
+      </form>
       <div className="h-52 bg-gradient-to-br from-purple-900 to-blue-900 text-center text-cyan-100 flex items-center justify-center rounded-lg border border-slate-600 shadow-inner">
         {isLoading ? (
           <p className="text-cyan-300 font-medium">Searching game...</p>
@@ -166,5 +160,4 @@ const GameCard = ({ name }: GameCardProps) => {
     </div>
   );
 };
-
 export default GameCard;

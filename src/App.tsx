@@ -1,3 +1,4 @@
+import React from "react";
 import GameCard from "./GameCard";
 import { cardNames } from "./data/cards";
 import "./index.css";
@@ -16,32 +17,76 @@ export default function App() {
     }
   };
 
-  const handleShare = async () => {
+  const [roast, setRoast] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const buildSummaryText = () => {
     const allData = loadAllData();
-    const shareText = Object.entries(allData)
+    const lines = Object.entries(allData)
       .map(([name, { game, character }]) => {
         if (game || character) {
           const gameName = game?.name || "No game";
           const charName = character || "No character";
-          return `${name}: ${gameName}${character ? `, Character: ${charName}` : ""}`;
+          return `${name}: ${gameName}${
+            character ? `, Character: ${charName}` : ""
+          }`;
         }
         return null;
       })
-      .filter(Boolean)
-      .join("\n");
+      .filter(Boolean) as string[];
 
-    if (!shareText) {
+    if (!lines.length) {
+      return "";
+    }
+
+    return `My Favorite Games:\n${lines.join("\n")}`;
+  };
+
+  const handleShare = async () => {
+    const finalText = buildSummaryText();
+
+    if (!finalText) {
       alert("No games or characters to share!");
       return;
     }
 
-    const finalText = `My Favorite Games:\n${shareText}`;
     try {
       await navigator.clipboard.writeText(finalText);
       alert("Your favorites have been copied to clipboard!");
     } catch (error) {
       console.error("Error copying to clipboard:", error);
       alert("Failed to copy to clipboard.");
+    }
+  };
+
+  const handleRoast = async () => {
+    const finalText = buildSummaryText();
+
+    if (!finalText) {
+      alert("Сначала добавь хотя бы одну игру или персонажа 😉");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/.netlify/functions/ai-roast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: finalText }),
+      });
+
+      const json = await res.json();
+      if (json.roast) {
+        setRoast(json.roast);
+      } else {
+        alert("Ошибка: " + (json.error ?? "неизвестная ошибка от ИИ"));
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Не удалось связаться с ИИ");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,8 +112,49 @@ export default function App() {
               >
                 Share
               </button>
+              <button
+                onClick={handleRoast}
+                disabled={isLoading}
+                className="bg-purple-900 hover:bg-red-700 text-white font-semibold py-1.5 px-3 text-sm rounded-lg shadow-md transition-colors duration-200"
+              >
+                {isLoading ? "Загрузка" : "Прожарка игрового вкуса"}
+              </button>
             </div>
           </div>
+          {roast && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+              <div className="bg-slate-900 border-4 border-red-500 rounded-3xl max-w-2xl w-full p-8 relative">
+                <button
+                  onClick={() => setRoast(null)}
+                  className="absolute top-4 right-4 text-3xl text-red-400 hover:text-white"
+                >
+                  ✕
+                </button>
+                <h2 className="text-3xl font-bold text-red-400 mb-6">
+                  Прожарка готова
+                </h2>
+                <div className="text-lg leading-relaxed whitespace-pre-wrap text-slate-200">
+                  {roast}
+                </div>
+                <button
+                  onClick={async () => {
+                    try {
+                      if (roast) {
+                        await navigator.clipboard.writeText(roast);
+                        alert("прожарка скопирована в буфер обмена");
+                      }
+                    } catch (error) {
+                      console.error("Error copying roast:", error);
+                      alert("Не удалось скопировать прожарку");
+                    }
+                  }}
+                  className="mt-6 w-full py-4 bg-red-600 hover:bg-red-700 rounded-2xl font-bold"
+                >
+                  Скопировать прожарку
+                </button>
+              </div>
+            </div>
+          )}
         </header>
         <main className="max-w-7xl mx-auto grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4 gap-y-4 sm:gap-y-6 p-2 sm:p-4">
           {cardNames.map((name) => (
@@ -88,7 +174,7 @@ export default function App() {
 
               <div className="flex items-center space-x-3 text-xs">
                 <a
-                  href="https://www.instagram.com/medicalmechanica312?igsh=MWVtN2Rhc3o5dmc5aw=="
+                  href="https://t.me/Deny_mud"
                   className="text-slate-400 hover:text-purple-400 transition-colors duration-200"
                 >
                   Contact
@@ -100,5 +186,6 @@ export default function App() {
         </footer>
       </div>
     </div>
+    
   );
 }
