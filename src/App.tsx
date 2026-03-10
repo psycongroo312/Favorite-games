@@ -174,7 +174,7 @@ export default function App() {
 
               <div className="flex items-center space-x-3 text-xs">
                 <a
-                  href="https://t.me/Deny_mud"
+                  href="https://www.instagram.com/medicalmechanica312"
                   className="text-slate-400 hover:text-purple-400 transition-colors duration-200"
                 >
                   Contact
