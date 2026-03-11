@@ -76,15 +76,52 @@ export default function App() {
         body: JSON.stringify({ data: finalText }),
       });
 
+      if (!res.ok) {
+        // В dev-режиме показываем заглушку, чтобы не требовать Netlify Dev
+        if (import.meta.env.DEV) {
+          setRoast(
+            "Это тестовая прожарка в dev-режиме.\n\nПодними Netlify Functions (`netlify dev`) и добавь GROQ_API_KEY, чтобы увидеть настоящую прожарку от ИИ.",
+          );
+          return;
+        }
+
+        let errorMessage: string | undefined;
+        try {
+          const errorJson = await res.json();
+          errorMessage = errorJson.error;
+        } catch {
+          // тело могло быть не JSON (например, HTML от Vite)
+        }
+
+        alert(
+          "Ошибка: " +
+            (errorMessage ??
+              `сервер ИИ вернул статус ${res.status}. Попробуй позже.`),
+        );
+        return;
+      }
+
       const json = await res.json();
       if (json.roast) {
         setRoast(json.roast);
       } else {
+        if (import.meta.env.DEV) {
+          setRoast(
+            "Это тестовая прожарка в dev-режиме.\n\nОтвет от ИИ пришёл в неожиданном формате, но в проде (Netlify) всё ок.",
+          );
+          return;
+        }
         alert("Ошибка: " + (json.error ?? "неизвестная ошибка от ИИ"));
       }
     } catch (e) {
       console.error(e);
-      alert("Не удалось связаться с ИИ");
+      if (import.meta.env.DEV) {
+        setRoast(
+          "Это тестовая прожарка в dev-режиме.\n\nНе удалось достучаться до /.netlify/functions/ai-roast. Для реальной прожарки запусти `netlify dev` или открой деплой на Netlify.",
+        );
+      } else {
+        alert("Не удалось связаться с ИИ");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -122,18 +159,18 @@ export default function App() {
             </div>
           </div>
           {roast && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-              <div className="bg-slate-900 border-4 border-red-500 rounded-3xl max-w-2xl w-full p-8 relative">
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40 px-4 py-8">
+              <div className="bg-slate-900 border-4 border-red-500 rounded-3xl max-w-xl w-full max-h-[80vh] overflow-y-auto p-6 sm:p-8 relative shadow-2xl">
                 <button
                   onClick={() => setRoast(null)}
                   className="absolute top-4 right-4 text-3xl text-red-400 hover:text-white"
                 >
                   ✕
                 </button>
-                <h2 className="text-3xl font-bold text-red-400 mb-6">
+                <h2 className="text-2xl sm:text-3xl font-bold text-red-400 mb-4 sm:mb-6 pr-8">
                   Прожарка готова
                 </h2>
-                <div className="text-lg leading-relaxed whitespace-pre-wrap text-slate-200">
+                <div className="text-base sm:text-lg leading-relaxed whitespace-pre-wrap text-slate-200">
                   {roast}
                 </div>
                 <button
@@ -148,7 +185,7 @@ export default function App() {
                       alert("Не удалось скопировать прожарку");
                     }
                   }}
-                  className="mt-6 w-full py-4 bg-red-600 hover:bg-red-700 rounded-2xl font-bold"
+                  className="mt-4 sm:mt-6 w-full py-3 sm:py-4 bg-red-600 hover:bg-red-700 rounded-2xl font-bold"
                 >
                   Скопировать прожарку
                 </button>
