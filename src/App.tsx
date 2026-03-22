@@ -168,7 +168,7 @@ export default function App() {
                   ✕
                 </button>
                 <h2 className="text-2xl sm:text-3xl font-bold text-red-400 mb-4 sm:mb-6 pr-8">
-                  Прожарка готова
+                Психологический портрет
                 </h2>
                 <div className="text-base sm:text-lg leading-relaxed whitespace-pre-wrap text-slate-200">
                   {roast}
