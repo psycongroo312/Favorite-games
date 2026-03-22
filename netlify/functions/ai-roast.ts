@@ -121,7 +121,7 @@ export const handler: Handler = async (event) => {
             { role: "user", content: prompt },
           ],
           temperature: 0.9,
-          max_tokens: 600,
+        
         }),
       },
     );
