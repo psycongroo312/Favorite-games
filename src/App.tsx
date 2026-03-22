@@ -154,7 +154,7 @@ export default function App() {
                 disabled={isLoading}
                 className="bg-purple-900 hover:bg-red-700 text-white font-semibold py-1.5 px-3 text-sm rounded-lg shadow-md transition-colors duration-200"
               >
-                {isLoading ? "Загрузка" : "Прожарка игрового вкуса"}
+                {isLoading ? "Загрузка" : "Психологический портрет от ИИ"}
               </button>
             </div>
           </div>
@@ -178,11 +178,11 @@ export default function App() {
                     try {
                       if (roast) {
                         await navigator.clipboard.writeText(roast);
-                        alert("прожарка скопирована в буфер обмена");
+                        alert("психологический портрет скопирован в буфер обмена");
                       }
                     } catch (error) {
                       console.error("Error copying roast:", error);
-                      alert("Не удалось скопировать прожарку");
+                      alert("Не удалось скопировать психологический портрет");
                     }
                   }}
                   className="mt-4 sm:mt-6 w-full py-3 sm:py-4 bg-red-600 hover:bg-red-700 rounded-2xl font-bold"
